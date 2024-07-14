@@ -1,0 +1,148 @@
+:root {
+  --color-50: #f1f6fd;
+  --color-100: #dfecfa;
+  --color-200: #c6ddf7;
+  --color-300: #9fc8f1;
+  --color-400: #72a9e8;
+  --color-500: #508ae1;
+  --color-600: #3f71d5;
+  --color-700: #325bc3;
+  --color-800: #2f4b9e;
+  --color-900: #2a427e;
+  --color-950: #1e2a4d;
+  --white: #ffffff;
+  --status-bar-color: #ff0000;
+  --deselect-region-color: #2f4b9e80;
+}
+
+*,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-50);
+  margin: auto;
+}
+
+#playlist-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px 0px;
+}
+
+#audio-wrapper {
+  min-height: 200px;
+}
+
+.playlist-item {
+  /* background-color: rgb(165, 165, 165); */
+  padding: 5px 10px;
+  /* margin: 20px; */
+}
+
+.playlist-item > div {
+  background-color: var(--color-200);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.item-over {
+  border-top: 2px solid var(--color-600);
+}
+
+.item-selected {
+  opacity: 0.5;
+}
+
+.item-clicked > div {
+  background-color: var(--color-900) !important;
+  color: var(--white);
+}
+
+#audio-btn-wrapper {
+  display: flex;
+  /* padding-left: 20px; */
+  flex-direction: column;
+  background-color: var(--color-400);
+}
+
+#btn-wrapper {
+  display: flex;
+  padding-left: 20px;
+}
+
+#range-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 25px;
+  background-color: var(--color-400);
+}
+
+.range {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.range > label {
+  display: inline-block;
+  width: 70px;
+  margin-right: 10px;
+}
+
+.range > input[type="range"] {
+  width: 100%;
+  margin: 10px auto;
+}
+
+.audio-btn {
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin: 10px 5px;
+  background-color: var(--white);
+  border-radius: 10px;
+}
+
+.audio-btn > img {
+  width: 20px;
+  height: 20px;
+}
+
+.audio-btn:hover {
+  background-color: var(--color-900);
+  transition-duration: 0.25s;
+}
+
+.audio-btn:hover > img {
+  filter: invert(1);
+  transition-duration: 0.25s;
+}
+
+#canvas-wrapper {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  height: 200px;
+  position: relative;
+}
+
+#canvas-wrapper > canvas {
+  /* border: 1px solid black; */
+  position: absolute;
+}
+
+#audio-status {
+  z-index: 1;
+  /* background-color: #508ae1; */
+}
