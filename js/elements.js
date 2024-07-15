@@ -30,12 +30,12 @@ export default class Elements {
 
   static init() {
     // 노래 관련 버튼들
-    this.audio.playBtn.addEventListener("click", () => this.playMusic());
-    this.audio.forwardBtn.addEventListener("click", () =>
-      this.scrollTo(SCROLL_POS.start)
+    this.audio.playBtn.addEventListener("click", (e) => this.playMusic(e));
+    this.audio.forwardBtn.addEventListener("click", (e) =>
+      this.scrollTo(e, SCROLL_POS.start)
     );
-    this.audio.backwardBtn.addEventListener("click", () =>
-      this.scrollTo(SCROLL_POS.end)
+    this.audio.backwardBtn.addEventListener("click", (e) =>
+      this.scrollTo(e, SCROLL_POS.end)
     );
     // 캔버스 그리기
     this.initCanvasHeight();
@@ -45,7 +45,8 @@ export default class Elements {
     this.range.end.addEventListener("input", (e) => this.setRange(e));
   }
 
-  static playMusic() {
+  static playMusic(e) {
+    e.preventDefault();
     // 현재 재생중인 노래가 없으면 종료
     if (AudioPlayer.current.idx === null) return;
 
@@ -75,7 +76,8 @@ export default class Elements {
     }
   }
 
-  static scrollTo(scrollPos) {
+  static scrollTo(e, scrollPos) {
+    e.preventDefault();
     // 현재 재생중인 노래가 없으면 종료
     if (AudioPlayer.current.idx === null) return;
 
