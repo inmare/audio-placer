@@ -1,6 +1,7 @@
-import { AUDIO_STATUS } from "./config";
+import { AUDIO_STATUS, PIXEL_RATIO, IMG_PATH } from "./config";
 import Playlist from "./playlist";
 import CanvasDraw from "./canvasDraw";
+import Elements from "./elements";
 
 export default class AudioPlayer {
   static current = {
@@ -10,64 +11,8 @@ export default class AudioPlayer {
     start: 0,
     offset: 0,
   };
-  static elem = {
-    playBtn: document.querySelector("#audio-play"),
-    forwardBtn: document.querySelector("#move-forward"),
-    backwardBtn: document.querySelector("#move-backward"),
-    canvasWrapper: document.querySelector("#canvas-wrapper"),
-    statusCanvas: document.querySelector("#audio-status"),
-  };
 
   constructor() {}
-
-  static init() {
-    this.elem.playBtn.addEventListener("click", (e) => {
-      if (this.current.idx !== null) {
-        const status = this.elem.playBtn.dataset.status;
-        const img = this.elem.playBtn.querySelector("img");
-        if (status === AUDIO_STATUS.pause) {
-          this.play(this.current.offset);
-          CanvasDraw.reqId = requestAnimationFrame(
-            CanvasDraw.drawOffsetAnimation.bind(CanvasDraw)
-          );
-          img.src = "img/pause-solid.svg";
-          this.elem.playBtn.dataset.status = AUDIO_STATUS.play;
-        } else if (status === AUDIO_STATUS.play) {
-          this.stop();
-          cancelAnimationFrame(CanvasDraw.reqId);
-          img.src = "img/play-solid.svg";
-          this.elem.playBtn.dataset.status = AUDIO_STATUS.pause;
-        }
-      }
-    });
-    this.elem.forwardBtn.addEventListener("click", () => this.moveTo("start"));
-    this.elem.backwardBtn.addEventListener("click", () => this.moveTo("end"));
-    this.elem.statusCanvas.addEventListener("click", (e) => {
-      const offsetPx = e.offsetX;
-      const duration = Playlist.list[this.current.idx].info.audioData.duration;
-      const offsetTime = (offsetPx / e.target.width) * duration;
-
-      this.seek(offsetTime);
-      CanvasDraw.drawStatus(offsetTime, null, null);
-    });
-  }
-
-  static moveTo(type) {
-    if (this.current.idx !== null) {
-      const info = Playlist.list[this.current.idx].info;
-      const wrapper = this.elem.canvasWrapper;
-      let time, offset;
-      if (type === "start") {
-        time = info.audioStart;
-        offset = 0;
-      } else if (type === "end") {
-        time = info.audioEnd;
-        offset = wrapper.scrollWidth;
-      }
-      wrapper.scrollLeft = offset;
-      this.seek(time);
-    }
-  }
 
   static async setSource(idx) {
     if (this.current.source) this.stop();
@@ -83,68 +28,62 @@ export default class AudioPlayer {
       info.audioInitGain = initGain;
       info.audioGain = initGain;
     }
+    return;
   }
 
   static play(offset) {
     // static 변수 offset에 따라 audio start, end 값 설정
     const idx = this.current.idx;
+    if (idx === null) return;
+
     const audioCtx = this.current.context;
-
-    if (idx !== null) {
-      const info = Playlist.list[idx].info;
-      this.current.source = audioCtx.createBufferSource();
-      this.current.source.buffer = info.audioData;
-
-      const gainNode = audioCtx.createGain();
-      // 실제보다 살짝 작은 볼륨으로 재생
-      gainNode.gain.value = info.audioInitGain / 3;
-
-      this.current.source.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-
-      this.current.source.start(0, offset);
-      // this.current.source.start(0, 100);
-      this.current.start = audioCtx.currentTime;
-
-      this.current.source.onended = () => {
-        // AudioCanvas.audioOffset = 0;
-        const img = this.elem.playBtn.querySelector("img");
-        img.src = "img/play-solid.svg";
-        this.elem.playBtn.dataset.status = AUDIO_STATUS.pause;
-        // cancelAnimationFrame(reqId);
-      };
+    const info = Playlist.list[idx].info;
+    if (this.current.source) {
+      this.current.source.stop();
+      this.current.source = null;
     }
+    this.current.source = audioCtx.createBufferSource();
+    this.current.source.buffer = info.audioData;
+
+    const gainNode = audioCtx.createGain();
+    // 실제보다 살짝 작은 볼륨으로 재생
+    gainNode.gain.value = info.audioInitGain / 3;
+
+    this.current.source.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    this.current.source.start(0, offset);
+    this.current.start = audioCtx.currentTime;
+
+    // this.current.source.onended = () => {
+    //   const img = this.elem.playBtn.querySelector("img");
+    //   img.src = "img/play-solid.svg";
+    //   this.elem.playBtn.dataset.status = AUDIO_STATUS.pause;
+    // };
   }
 
   static stop() {
     // static 변수 offset에 값을 저장함
-    this.current.source.stop();
+    if (this.current.source) {
+      this.current.source.stop();
+      this.current.source = null;
+    }
     this.current.offset +=
       this.current.context.currentTime - this.current.start;
-    // cancelAnimationFrame(canvasDraw.reqId);
-    this.current.source = null;
     this.current.start = 0;
   }
 
   static seek(offset) {
+    this.stop();
     this.current.offset = offset;
-    const status = this.elem.playBtn.dataset.status;
+    const status = Elements.audio.playBtn.dataset.status;
     if (status === AUDIO_STATUS.play) {
-      this.stop();
       this.play(offset);
     } else if (status === AUDIO_STATUS.pause) {
       // 필요할까 싶은 초기화
       this.current.start = 0;
       this.current.source = null;
     }
-  }
-
-  // 쓰이려나?
-  static resetValues() {
-    this.current.idx = null;
-    this.current.source = null;
-    this.current.start = 0;
-    this.current.offset = 0;
   }
 
   // --- utils functions ---

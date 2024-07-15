@@ -1,19 +1,11 @@
 import AudioPlayer from "./audioPlayer";
 import CanvasDraw from "./canvasDraw";
 import Utils from "./utils";
+import { AUDIO_STATUS, IMG_PATH } from "./config";
+import Elements from "./elements";
 
 export default class Playlist {
   static list = [];
-  static wrapperElem = document.querySelector("#playlist-wrapper");
-  static currentOverElem = null;
-  static selectedElem = null;
-  static clickedElem = null;
-  static elem = {
-    wrapper: document.querySelector("#playlist-wrapper"),
-    over: null,
-    selected: null,
-    clicked: null,
-  };
 
   constructor(infoObj, infoIdx) {
     this.info = infoObj;
@@ -23,7 +15,7 @@ export default class Playlist {
   async click(e) {
     e.preventDefault();
     const target = e.target.closest(".playlist-item");
-    const clicked = Playlist.clickedElem;
+    const clicked = Elements.playlist.clicked;
     const idx = parseInt(target.dataset.id);
     if (!clicked) {
       await init(target, idx);
@@ -36,15 +28,27 @@ export default class Playlist {
           }
         }
         await init(target, idx);
-      } else {
-        target.classList.remove("item-clicked");
-        Playlist.clickedElem = null;
       }
     }
 
     async function init(target, idx) {
       target.classList.add("item-clicked");
-      Playlist.clickedElem = target;
+      Elements.playlist.clicked = target;
+      // 기존의 노래와 애니메이션을 삭제함
+      if (AudioPlayer.current.source) {
+        AudioPlayer.current.source.stop();
+        AudioPlayer.current.source = null;
+      }
+      if (CanvasDraw.reqId) {
+        cancelAnimationFrame(CanvasDraw.reqId);
+        CanvasDraw.reqId = null;
+      }
+      const playBtn = Elements.audio.playBtn;
+      if (playBtn.dataset.status === AUDIO_STATUS.play) {
+        playBtn.dataset.status = AUDIO_STATUS.pause;
+        playBtn.querySelector("img").src = IMG_PATH.play;
+      }
+
       await AudioPlayer.setSource(idx);
       CanvasDraw.drawSpectrum(idx);
       // 새로 데이터를 로드하는 경우 offsetTime을 초기화
@@ -61,7 +65,7 @@ export default class Playlist {
     div.setAttribute("draggable", "true");
     div.setAttribute("data-id", idx.toString());
     div.addEventListener("click", this.click);
-    Playlist.wrapperElem.appendChild(div);
+    Elements.playlist.wrapper.appendChild(div);
 
     const innerDiv = document.createElement("div");
     innerDiv.textContent = info.songNameKor;
@@ -70,45 +74,40 @@ export default class Playlist {
   }
 
   static addDragEventListeners() {
-    this.wrapperElem.addEventListener("dragstart", dragStart);
-    this.wrapperElem.addEventListener("dragover", dragOver);
-    this.wrapperElem.addEventListener("dragend", dragEnd);
+    Elements.playlist.wrapper.addEventListener("dragstart", dragStart);
+    Elements.playlist.wrapper.addEventListener("dragover", dragOver);
+    Elements.playlist.wrapper.addEventListener("dragend", dragEnd);
+    // Elements.playlist.wrapper.addEventListener("drop", dragEnd);
 
     function dragStart(e) {
-      const clicked = Playlist.clickedElem;
-      if (clicked) {
-        clicked.classList.remove("item-clicked");
-      }
-      Playlist.selectedElem = Utils.getOverElement(e);
-      const selected = Playlist.selectedElem;
-      // console.log("start");
-      if (selected) {
-        selected.classList.add("item-selected");
-      }
+      const clicked = Elements.playlist.clicked;
+      if (clicked) clicked.classList.remove("item-clicked");
+
+      Elements.playlist.selected = Utils.getOverElement(e);
+      const selected = Elements.playlist.selected;
+      if (selected) selected.classList.add("item-selected");
     }
 
     function dragOver(e) {
       e.preventDefault();
-      // console.log("over");
       const overElem = Utils.getOverElement(e);
-      const currentOver = Playlist.currentOverElem;
-      const selected = Playlist.selectedElem;
+      const currentOver = Elements.playlist.over;
+      const selected = Elements.playlist.selected;
       if (overElem != currentOver) {
         if (currentOver) {
           currentOver.classList.remove("item-over");
         }
         if (overElem != selected) {
           overElem?.classList.add("item-over");
-          Playlist.currentOverElem = overElem;
+          Elements.playlist.over = overElem;
         }
       }
     }
 
     function dragEnd(e) {
-      // console.log("end");
-      const wrapper = Playlist.wrapperElem;
-      const currentOver = Playlist.currentOverElem;
-      const selected = Playlist.selectedElem;
+      const wrapper = Elements.playlist.wrapper;
+      const currentOver = Elements.playlist.over;
+      const selected = Elements.playlist.selected;
       if (this == wrapper) {
         if (selected) selected.classList.remove("item-selected");
         if (currentOver) {
@@ -117,8 +116,8 @@ export default class Playlist {
           parentElem.insertBefore(selected, currentOver);
         }
       }
-      Playlist.currentOverElem = null;
-      Playlist.selectedElem = null;
+      Elements.playlist.over = null;
+      Elements.playlist.clicked = null;
     }
   }
 }

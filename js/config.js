@@ -3,6 +3,11 @@ const AUDIO_STATUS = {
   pause: "pause",
 };
 
+const SCROLL_POS = {
+  start: "start",
+  end: "end",
+};
+
 const PIXEL_RATIO = window.devicePixelRatio || 1;
 
 const CANVAS_AUDIO_CHUNK = 10000 / 4;
@@ -15,4 +20,16 @@ const DEFAULT_AUDIO_INFO = {
   audioEnd: 0,
 };
 
-export { AUDIO_STATUS, PIXEL_RATIO, CANVAS_AUDIO_CHUNK, DEFAULT_AUDIO_INFO };
+const IMG_PATH = {
+  play: "img/play-solid.svg",
+  pause: "img/pause-solid.svg",
+};
+
+export {
+  AUDIO_STATUS,
+  SCROLL_POS,
+  PIXEL_RATIO,
+  CANVAS_AUDIO_CHUNK,
+  DEFAULT_AUDIO_INFO,
+  IMG_PATH,
+};
