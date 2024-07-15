@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov-dynamic-subset.min.css");
+
 :root {
   --color-50: #f1f6fd;
   --color-100: #dfecfa;
@@ -20,6 +22,8 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Pretendard GOV Variable", "Malgun Gothic";
+  font-size: 16px;
 }
 
 #app {
@@ -38,14 +42,8 @@ body {
   padding: 10px 0px;
 }
 
-#audio-wrapper {
-  min-height: 200px;
-}
-
 .playlist-item {
-  /* background-color: rgb(165, 165, 165); */
   padding: 5px 10px;
-  /* margin: 20px; */
 }
 
 .playlist-item > div {
@@ -69,7 +67,6 @@ body {
 
 #audio-btn-wrapper {
   display: flex;
-  /* padding-left: 20px; */
   flex-direction: column;
   background-color: var(--color-400);
 }
@@ -83,7 +80,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5px 25px;
+  padding: 0px 25px;
   background-color: var(--color-400);
 }
 
@@ -97,6 +94,7 @@ body {
   display: inline-block;
   width: 70px;
   margin-right: 10px;
+  text-align: center;
 }
 
 .range > input[type="range"] {
@@ -133,16 +131,14 @@ body {
 #canvas-wrapper {
   overflow-x: scroll;
   overflow-y: hidden;
-  height: 200px;
+  height: 150px;
   position: relative;
 }
 
 #canvas-wrapper > canvas {
-  /* border: 1px solid black; */
   position: absolute;
 }
 
 #audio-status {
   z-index: 1;
-  /* background-color: #508ae1; */
 }
