@@ -56,6 +56,13 @@ export default class Playlist {
       const offsetTime = Playlist.list[idx].info.audioStart;
       AudioPlayer.current.offset = offsetTime;
       CanvasDraw.drawStatus(offsetTime, null, null);
+
+      const info = Playlist.list[idx].info;
+      const duration = info.audioData.duration;
+      const startTime = info.audioStart;
+      const endTime = info.audioEnd;
+      Elements.range.start.value = (startTime / (duration / 2)) * 100;
+      Elements.range.end.value = (endTime / (duration / 2)) * 100;
     }
   }
 
