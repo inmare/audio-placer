@@ -1,0 +1,29 @@
+#header-desc-wrapper {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#header-wrapper p {
+  color: var(--white);
+}
+
+#header-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+#header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#header-btn-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--color-900);
+}

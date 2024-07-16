@@ -1,0 +1,52 @@
+.btn {
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--white);
+  border-radius: 10px;
+  user-select: none;
+}
+
+.btn img {
+  width: 20px;
+  height: 20px;
+}
+
+#audio-wrapper .btn {
+  margin: 10px 5px;
+}
+
+#audio-wrapper .btn:hover {
+  background-color: var(--color-900);
+  transition-duration: 0.25s;
+}
+
+#audio-wrapper .btn:hover img {
+  filter: invert(1);
+  transition-duration: 0.25s;
+}
+
+#header-wrapper .btn {
+  background-color: transparent;
+  border-radius: none;
+}
+
+#header-wrapper .btn img {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+}
+
+#header-wrapper .btn:hover,
+.playlist-item .btn:hover img {
+  transform: scale(1.3);
+  transition-duration: 0.25s;
+}
+
+#header-wrapper .btn:not(:hover),
+.playlist-item .btn:not(:hover) img {
+  transform: scale(1);
+  transition-duration: 0.25s;
+}
