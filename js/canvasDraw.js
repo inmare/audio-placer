@@ -10,7 +10,6 @@ import Elements from "./elements.js";
 // TODO: 오디오의 시작지점 이전과 끝 지점 이후에 선택을 못하게 하고 재생도 자동으로 멈추게 하기
 
 export default class CanvasDraw {
-  static reqId = null;
   static color = {
     spectrum: window
       .getComputedStyle(document.body)
@@ -88,15 +87,6 @@ export default class CanvasDraw {
     ctx.fillRect(canvas.width - endPx, 0, endPx, canvas.height);
     ctx.fillStyle = this.color.offset;
     ctx.fillRect(offsetPx, 0, 1, canvas.height);
-  }
-
-  static drawOffsetAnimation() {
-    const currentTime = AudioPlayer.current.context.currentTime;
-    const startTime = AudioPlayer.current.start;
-    const offsetTime = currentTime - startTime + AudioPlayer.current.offset;
-
-    this.drawStatus(offsetTime, null, null);
-    this.reqId = requestAnimationFrame(this.drawOffsetAnimation.bind(this));
   }
 
   // --- utils functions ---

@@ -11,6 +11,7 @@ export default class AudioPlayer {
     start: 0,
     offset: 0,
   };
+  static reqId = null;
 
   constructor() {}
 
@@ -68,8 +69,8 @@ export default class AudioPlayer {
       this.current.source.stop();
       this.current.source = null;
     }
-    this.current.offset +=
-      this.current.context.currentTime - this.current.start;
+    // this.current.offset +=
+    //   this.current.context.currentTime - this.current.start;
     this.current.start = 0;
   }
 
@@ -138,5 +139,45 @@ export default class AudioPlayer {
     const audioGain = Math.pow(10, gainDecibel / 20);
 
     return audioGain;
+  }
+
+  // requestAnimationFrame으로 실시간으로 offset 위치를 설정하는 함수
+  static moveOffset(prevTime) {
+    if (this.current.idx === null) return;
+
+    const audioCtx = this.current.context;
+    const currentTime = audioCtx.currentTime;
+
+    const offset = this.current.offset + currentTime - prevTime;
+    this.current.offset = offset;
+
+    const info = Playlist.list[this.current.idx].info;
+    const duration = info.audioData.duration;
+    const endTime = info.audioEnd;
+    // 만약 audioEnd를 넘어가면 멈춤
+    if (offset > duration - endTime) {
+      this.stopOffset();
+      return;
+    }
+
+    // requestAnimationFrame을 통해서 캔버스에도 실시간으로 그림을 그림
+    CanvasDraw.drawStatus(offset, null, null);
+
+    this.reqId = requestAnimationFrame(() => {
+      this.moveOffset(currentTime);
+    });
+  }
+
+  static cancelOffset() {
+    if (this.reqId) cancelAnimationFrame(this.reqId);
+    this.reqId = null;
+  }
+
+  static stopOffset() {
+    const startTime = Playlist.list[this.current.idx].info.audioStart;
+    this.current.offset = startTime;
+    this.cancelOffset();
+    CanvasDraw.drawStatus(startTime, null, null);
+    Elements.audio.playBtn.click();
   }
 }
