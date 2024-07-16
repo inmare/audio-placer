@@ -34,6 +34,7 @@ body {
   height: 100vh;
   overflow: hidden;
   justify-content: center;
+  margin: auto;
 }
 
 #app > div {
