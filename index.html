@@ -10,6 +10,12 @@
     <div id="app">
       <div id="header-wrapper">
         <p id="header-title">플레이 리스트 연결하기</p>
+        <div id="header-btn-wrapper">
+          <div id="upload-mp3">mp3</div>
+          <div id="export-mp3">export</div>
+          <div id="open-doc">doc</div>
+          <div id="github-link">github</div>
+        </div>
       </div>
       <div id="playlist-wrapper"></div>
       <div id="audio-wrapper">
@@ -58,10 +64,25 @@
         </div>
       </div>
     </div>
-    <!-- <button id="get-gain">Calculate</button>
-    <button id="play">Play</button>
-    <br />
-    <canvas id="canvas" width="400" height="100"></canvas> -->
+    <template id="playlist-item-template">
+      <div>
+        <div class="music-info-wrapper">
+          <p>
+            <span class="music-order"></span>
+            <span class="music-title"></span>
+          </p>
+          <div class="music-upload-wrapper">
+            <div class="music-upload-btn"><img src="" alt="" /></div>
+            <input class="upload-music" type="file" />
+            <span class="music-file-name">file name</span>
+          </div>
+        </div>
+        <div class="order-btn-wrapper">
+          <div class="move-up"><img src="" alt="" /></div>
+          <div class="move-down"><img src="" alt="" /></div>
+        </div>
+      </div>
+    </template>
     <script type="module" src="js/script.js"></script>
   </body>
 </html>

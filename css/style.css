@@ -67,6 +67,7 @@ body {
   background-color: var(--color-200);
   padding: 10px;
   border-radius: 10px;
+  display: flex;
 }
 
 .item-over {
@@ -80,6 +81,36 @@ body {
 .item-clicked > div {
   background-color: var(--color-900) !important;
   color: var(--white);
+}
+
+.music-order::after {
+  content: ". ";
+}
+
+.upload-music {
+  display: none;
+}
+
+.music-info-wrapper {
+  flex-grow: 1;
+}
+
+.music-upload-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.music-upload-btn {
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin: 0px 5px;
+  background-color: var(--white);
+  border-radius: 10px;
+  user-select: none;
 }
 
 #audio-btn-wrapper {
