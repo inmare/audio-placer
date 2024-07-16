@@ -45,8 +45,7 @@ export default class Elements {
     this.range.end.addEventListener("input", (e) => this.setRange(e));
   }
 
-  static playMusic(e) {
-    e.preventDefault();
+  static playMusic() {
     // 현재 재생중인 노래가 없으면 종료
     if (AudioPlayer.current.idx === null) return;
 
@@ -55,19 +54,25 @@ export default class Elements {
     const img = this.audio.playBtnImg;
     switch (status) {
       case AUDIO_STATUS.pause:
+        // range 조작 비활성화
+        this.range.start.disabled = true;
+        this.range.end.disabled = true;
+        // 재생을 시작하고 offset값 실시간 업데이트
         AudioPlayer.play(AudioPlayer.current.offset);
-        CanvasDraw.reqId = requestAnimationFrame(
-          CanvasDraw.drawOffsetAnimation.bind(CanvasDraw)
-        );
+        const currentTime = AudioPlayer.current.context.currentTime;
+        AudioPlayer.reqId = requestAnimationFrame(() => {
+          AudioPlayer.moveOffset(currentTime);
+        });
         img.src = IMG_PATH.pause;
         playBtn.dataset.status = AUDIO_STATUS.play;
         break;
       case AUDIO_STATUS.play:
-        // 재생을 멈추고 animtaion 재생도 멈춤
+        // range 조작 활성화
+        this.range.start.disabled = false;
+        this.range.end.disabled = false;
+        // 재생을 멈추고 offset업데이트도 멈춤
         AudioPlayer.stop();
-        cancelAnimationFrame(CanvasDraw.reqId);
-        CanvasDraw.reqId = null;
-        CanvasDraw.drawStatus(AudioPlayer.current.offset, null, null);
+        AudioPlayer.cancelOffset();
         img.src = IMG_PATH.play;
         playBtn.dataset.status = AUDIO_STATUS.pause;
         break;
@@ -98,23 +103,27 @@ export default class Elements {
   static seekCanvas(e) {
     const offsetPixel = e.offsetX;
     const idx = AudioPlayer.current.idx;
-    const duration = Playlist.list[idx].info.audioData.duration;
+    const info = Playlist.list[idx].info;
+    const duration = info.audioData.duration;
     const offsetTime = (offsetPixel / e.target.width) * duration * PIXEL_RATIO;
+
+    // 클릭한 지점이 노래 비활성화 지점이면 아무 일도 일어나지 않음
+    if (offsetTime < info.audioStart || offsetTime > duration - info.audioEnd)
+      return;
 
     AudioPlayer.seek(offsetTime);
     // 기존의 재생되고 있던 애니메이션은 종료함
-    if (CanvasDraw.reqId) {
-      cancelAnimationFrame(CanvasDraw.reqId);
-      CanvasDraw.reqId = null;
-    }
+    AudioPlayer.cancelOffset();
     const status = this.audio.playBtn.dataset.status;
     switch (status) {
       case AUDIO_STATUS.play:
-        CanvasDraw.reqId = requestAnimationFrame(
-          CanvasDraw.drawOffsetAnimation.bind(CanvasDraw)
-        );
+        const currentTime = AudioPlayer.current.context.currentTime;
+        AudioPlayer.reqId = requestAnimationFrame(() => {
+          AudioPlayer.moveOffset(currentTime);
+        });
         break;
       case AUDIO_STATUS.pause:
+        AudioPlayer.current.offset = offsetTime;
         CanvasDraw.drawStatus(offsetTime, null, null);
       default:
         break;
@@ -152,9 +161,15 @@ export default class Elements {
 
     if (name == "start-range") {
       info.audioStart = time;
+      if (AudioPlayer.current.offset < time) {
+        AudioPlayer.current.offset = time;
+      }
       CanvasDraw.drawStatus(null, time, null);
     } else if (name == "end-range") {
       info.audioEnd = time;
+      if (AudioPlayer.current.offset > duration - time) {
+        AudioPlayer.current.offset = duration - time;
+      }
       CanvasDraw.drawStatus(null, null, time);
     }
   }

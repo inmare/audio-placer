@@ -15,21 +15,15 @@ export default class Playlist {
   async click(e) {
     e.preventDefault();
     const target = e.target.closest(".playlist-item");
-    const clicked = Elements.playlist.clicked;
+    // const clicked = Elements.playlist.clicked;
     const idx = parseInt(target.dataset.id);
-    if (!clicked) {
-      await init(target, idx);
-    } else {
-      if (clicked != target) {
-        const items = document.querySelectorAll(".playlist-item");
-        for (let item of items) {
-          if (item.classList.contains("item-clicked")) {
-            item.classList.remove("item-clicked");
-          }
-        }
-        await init(target, idx);
+    const items = document.querySelectorAll(".playlist-item");
+    for (let item of items) {
+      if (item.classList.contains("item-clicked")) {
+        item.classList.remove("item-clicked");
       }
     }
+    await init(target, idx);
 
     async function init(target, idx) {
       target.classList.add("item-clicked");
@@ -38,10 +32,13 @@ export default class Playlist {
       if (AudioPlayer.current.source) {
         AudioPlayer.current.source.stop();
         AudioPlayer.current.source = null;
+        // range 슬라이더 활성화
+        Elements.range.start.disabled = false;
+        Elements.range.end.disabled = false;
       }
-      if (CanvasDraw.reqId) {
-        cancelAnimationFrame(CanvasDraw.reqId);
-        CanvasDraw.reqId = null;
+      if (AudioPlayer.reqId) {
+        cancelAnimationFrame(AudioPlayer.reqId);
+        AudioPlayer.reqId = null;
       }
       const playBtn = Elements.audio.playBtn;
       if (playBtn.dataset.status === AUDIO_STATUS.play) {
@@ -88,7 +85,7 @@ export default class Playlist {
 
     function dragStart(e) {
       const clicked = Elements.playlist.clicked;
-      if (clicked) clicked.classList.remove("item-clicked");
+      // if (clicked) clicked.classList.remove("item-clicked");
 
       Elements.playlist.selected = Utils.getOverElement(e);
       const selected = Elements.playlist.selected;
