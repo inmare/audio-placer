@@ -68,6 +68,7 @@ export default class Playlist {
     const divContent = document
       .querySelector("#playlist-item-template")
       .content.cloneNode(true);
+    div.draggable = true;
     div.append(divContent);
     div.classList.add("playlist-item");
 
@@ -88,7 +89,6 @@ export default class Playlist {
     Elements.playlist.wrapper.addEventListener("dragstart", dragStart);
     Elements.playlist.wrapper.addEventListener("dragover", dragOver);
     Elements.playlist.wrapper.addEventListener("dragend", dragEnd);
-    // Elements.playlist.wrapper.addEventListener("drop", dragEnd);
 
     function dragStart(e) {
       Elements.playlist.selected = Utils.getOverElement(e);
