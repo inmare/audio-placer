@@ -13,7 +13,7 @@ export default class Playlist {
   }
 
   async click(e) {
-    e.preventDefault();
+    // e.preventDefault();
     const target = e.target.closest(".playlist-item");
     // const clicked = Elements.playlist.clicked;
     const idx = parseInt(target.dataset.id);
@@ -65,15 +65,22 @@ export default class Playlist {
 
   createDiv(info, idx) {
     const div = document.createElement("div");
+    const divContent = document
+      .querySelector("#playlist-item-template")
+      .content.cloneNode(true);
+    div.append(divContent);
     div.classList.add("playlist-item");
-    div.setAttribute("draggable", "true");
-    div.setAttribute("data-id", idx.toString());
-    div.addEventListener("click", this.click);
-    Elements.playlist.wrapper.appendChild(div);
 
-    const innerDiv = document.createElement("div");
-    innerDiv.textContent = info.songNameKor;
-    div.appendChild(innerDiv);
+    const title = div.querySelector(".music-title");
+    title.textContent = info.songNameKor;
+
+    const order = div.querySelector(".music-order");
+    order.textContent = idx + 1;
+
+    Elements.playlist.wrapper.append(div);
+    div.setAttribute("data-id", idx);
+
+    div.addEventListener("click", this.click);
     return div;
   }
 
@@ -84,9 +91,6 @@ export default class Playlist {
     // Elements.playlist.wrapper.addEventListener("drop", dragEnd);
 
     function dragStart(e) {
-      const clicked = Elements.playlist.clicked;
-      // if (clicked) clicked.classList.remove("item-clicked");
-
       Elements.playlist.selected = Utils.getOverElement(e);
       const selected = Elements.playlist.selected;
       if (selected) selected.classList.add("item-selected");
@@ -121,7 +125,6 @@ export default class Playlist {
         }
       }
       Elements.playlist.over = null;
-      Elements.playlist.clicked = null;
     }
   }
 }
