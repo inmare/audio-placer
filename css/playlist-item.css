@@ -1,10 +1,52 @@
+.playlist-item {
+  padding: 5px 10px;
+}
+
+.playlist-item > div {
+  background-color: var(--color-200);
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+}
+
 .playlist-item span,
 .playlist-item img {
   user-select: none;
 }
 
+.item-over {
+  border-top: 2px solid var(--color-600);
+}
+
+.item-selected {
+  opacity: 0.5;
+}
+
+.item-clicked > div {
+  background-color: var(--color-900) !important;
+  color: var(--white);
+}
+
+.music-order::after {
+  content: ". ";
+}
+
+.upload-music {
+  display: none;
+}
+
+.music-info-wrapper {
+  flex-grow: 1;
+}
+
 .music-info-wrapper p {
   font-weight: 600;
+}
+
+.music-upload-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
 }
 
 .item-btn-wrapper {

@@ -2,6 +2,7 @@
 @import url("./playlist-item.css");
 @import url("./header.css");
 @import url("./buttons.css");
+@import url("./ranges.css");
 
 :root {
   --color-50: #f1f6fd;
@@ -51,48 +52,6 @@ body {
   flex-grow: 1;
 }
 
-.playlist-item {
-  padding: 5px 10px;
-}
-
-.playlist-item > div {
-  background-color: var(--color-200);
-  padding: 10px;
-  border-radius: 10px;
-  display: flex;
-}
-
-.item-over {
-  border-top: 2px solid var(--color-600);
-}
-
-.item-selected {
-  opacity: 0.5;
-}
-
-.item-clicked > div {
-  background-color: var(--color-900) !important;
-  color: var(--white);
-}
-
-.music-order::after {
-  content: ". ";
-}
-
-.upload-music {
-  display: none;
-}
-
-.music-info-wrapper {
-  flex-grow: 1;
-}
-
-.music-upload-wrapper {
-  display: flex;
-  align-items: center;
-  margin-top: 5px;
-}
-
 #audio-btn-wrapper {
   display: flex;
   flex-direction: column;
@@ -110,51 +69,6 @@ body {
   align-items: center;
   padding: 0px 25px;
   background-color: var(--color-400);
-}
-
-.range {
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.range > label {
-  display: inline-block;
-  width: 70px;
-  margin-right: 10px;
-  text-align: center;
-}
-
-.range > input[type="range"] {
-  width: 100%;
-  margin: 10px auto;
-}
-
-.audio-btn {
-  width: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  margin: 10px 5px;
-  background-color: var(--white);
-  border-radius: 10px;
-  user-select: none;
-}
-
-.audio-btn > img {
-  width: 20px;
-  height: 20px;
-}
-
-.audio-btn:hover {
-  background-color: var(--color-900);
-  transition-duration: 0.25s;
-}
-
-.audio-btn:hover > img {
-  filter: invert(1);
-  transition-duration: 0.25s;
 }
 
 #canvas-wrapper {

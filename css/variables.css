@@ -1,0 +1,16 @@
+:root {
+  --color-50: #f1f6fd;
+  --color-100: #dfecfa;
+  --color-200: #c6ddf7;
+  --color-300: #9fc8f1;
+  --color-400: #72a9e8;
+  --color-500: #508ae1;
+  --color-600: #3f71d5;
+  --color-700: #325bc3;
+  --color-800: #2f4b9e;
+  --color-900: #2a427e;
+  --color-950: #1e2a4d;
+  --white: #ffffff;
+  --status-bar-color: #ff0000;
+  --deselect-region-color: #2f4b9e80;
+}

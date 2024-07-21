@@ -1,0 +1,17 @@
+.range {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.range > label {
+  display: inline-block;
+  width: 70px;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.range > input[type="range"] {
+  width: 100%;
+  margin: 10px auto;
+}

@@ -1,3 +1,4 @@
+/* 기본 버튼 스타일 */
 .btn {
   width: 40px;
   display: flex;
@@ -7,6 +8,7 @@
   background-color: var(--white);
   border-radius: 10px;
   user-select: none;
+  cursor: pointer;
 }
 
 .btn img {
@@ -14,6 +16,7 @@
   height: 20px;
 }
 
+/* audio-wrapper 내부 버튼 스타일 */
 #audio-wrapper .btn {
   margin: 10px 5px;
 }
@@ -28,6 +31,7 @@
   transition-duration: 0.25s;
 }
 
+/* header 내부 버튼 스타일 */
 #header-wrapper .btn {
   background-color: transparent;
   border-radius: none;
@@ -39,6 +43,7 @@
   filter: invert(1);
 }
 
+/* header 내부 및 playlist item 버튼 hover 스타일 */
 #header-wrapper .btn:hover,
 .playlist-item .btn:hover img {
   transform: scale(1.3);
@@ -49,4 +54,21 @@
 .playlist-item .btn:not(:hover) img {
   transform: scale(1);
   transition-duration: 0.25s;
+}
+
+/* playlist item 버튼 스타일 */
+.playlist-item:first-child .move-up,
+.playlist-item:last-child .move-down {
+  opacity: 0.5;
+}
+
+.playlist-item:first-child .move-up img,
+.playlist-item:last-child .move-down img {
+  transform: none;
+}
+
+.disabled-click {
+  pointer-events: none;
+  opacity: 0.5;
+  transform: none;
 }
