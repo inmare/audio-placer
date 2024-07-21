@@ -52,6 +52,17 @@ export default class Elements {
     const playBtn = this.audio.playBtn;
     const status = playBtn.dataset.status;
     const img = this.audio.playBtnImg;
+    const items = document.querySelectorAll(".playlist-item");
+    let playlistItem;
+    for (let item of items) {
+      const id = parseInt(item.dataset.id);
+      if (id == AudioPlayer.current.idx) {
+        playlistItem = item;
+        break;
+      }
+    }
+    const musicUploadBtn = playlistItem.querySelector(".music-upload-btn");
+
     switch (status) {
       case AUDIO_STATUS.pause:
         // range 조작 비활성화
@@ -65,6 +76,7 @@ export default class Elements {
         });
         img.src = IMG_PATH.pause;
         playBtn.dataset.status = AUDIO_STATUS.play;
+        musicUploadBtn.classList.add("disabled-click");
         break;
       case AUDIO_STATUS.play:
         // range 조작 활성화
@@ -75,6 +87,7 @@ export default class Elements {
         AudioPlayer.cancelOffset();
         img.src = IMG_PATH.play;
         playBtn.dataset.status = AUDIO_STATUS.pause;
+        musicUploadBtn.classList.remove("disabled-click");
         break;
       default:
         break;
