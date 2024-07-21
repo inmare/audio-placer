@@ -8,6 +8,11 @@ const SCROLL_POS = {
   end: "end",
 };
 
+const MOVE_TYPE = {
+  up: "up",
+  down: "down",
+};
+
 const PIXEL_RATIO = window.devicePixelRatio || 1;
 
 const CANVAS_AUDIO_CHUNK = 10000 / 4;
@@ -28,6 +33,7 @@ const IMG_PATH = {
 export {
   AUDIO_STATUS,
   SCROLL_POS,
+  MOVE_TYPE,
   PIXEL_RATIO,
   CANVAS_AUDIO_CHUNK,
   DEFAULT_AUDIO_INFO,
