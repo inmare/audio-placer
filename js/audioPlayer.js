@@ -1,4 +1,4 @@
-import { AUDIO_STATUS, PIXEL_RATIO, IMG_PATH } from "./config";
+import { AUDIO_STATUS, DEFAULT_AUDIO_INFO } from "./config";
 import Playlist from "./playlist";
 import CanvasDraw from "./canvasDraw";
 import Elements from "./elements";
@@ -15,21 +15,18 @@ export default class AudioPlayer {
 
   constructor() {}
 
-  static async setSource(idx) {
+  static async setSource(idx, audioBuffer) {
     if (this.current.source) this.stop();
-    this.current.idx = idx;
     const info = Playlist.list[idx].info;
-    if (idx != null && info.audioData === null) {
-      const fileName = info.fileName + ".mp3";
-      const audioData = await this.getAudioData(fileName);
-      const initGain = this.calculateGain(audioData);
+    const audioData = await this.getAudioData(audioBuffer);
+    const initGain = this.calculateGain(audioData);
 
-      // audioData와 gain값 초기화
-      info.audioData = audioData;
-      info.audioInitGain = initGain;
-      info.audioGain = initGain;
-    }
-    return;
+    // audioData와 gain값 초기화
+    info.audioData = audioData;
+    info.audioInitGain = initGain;
+    info.audioGain = initGain;
+    info.audioStart = DEFAULT_AUDIO_INFO.audioStart;
+    info.audioEnd = DEFAULT_AUDIO_INFO.audioEnd;
   }
 
   static play(offset) {
@@ -55,12 +52,6 @@ export default class AudioPlayer {
 
     this.current.source.start(0, offset);
     this.current.start = audioCtx.currentTime;
-
-    // this.current.source.onended = () => {
-    //   const img = this.elem.playBtn.querySelector("img");
-    //   img.src = "img/play-solid.svg";
-    //   this.elem.playBtn.dataset.status = AUDIO_STATUS.pause;
-    // };
   }
 
   static stop() {
@@ -89,13 +80,9 @@ export default class AudioPlayer {
 
   // --- utils functions ---
 
-  static async getAudioData(fileName) {
-    const response = await fetch(`music/${fileName}`);
-
+  static async getAudioData(audioBuffer) {
     const audioContext = new AudioContext();
-    const audioData = await audioContext.decodeAudioData(
-      await response.arrayBuffer()
-    );
+    const audioData = await audioContext.decodeAudioData(audioBuffer);
 
     return audioData;
   }
