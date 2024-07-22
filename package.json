@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@breezystack/lamejs": "^1.2.7",
+    "crunker": "^2.4.0",
     "vite": "^5.3.3"
   }
 }
