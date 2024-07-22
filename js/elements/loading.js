@@ -36,25 +36,16 @@ export default class Loading {
     };
   }
   static disable() {
-    setTimeout(() => {
-      console.log("loading disable");
-      this.progress.innerHTML = "";
-      this.loading.classList.add("disable-loading");
-    }, 0);
+    this.progress.innerHTML = "";
+    this.loading.classList.add("disable-loading");
   }
 
-  static async enable() {
-    setTimeout(() => {
-      console.log("loading enable");
-      this.progress.innerHTML = "";
-      this.loading.classList.remove("disable-loading");
-    }, 0);
+  static enable() {
+    this.progress.innerHTML = "";
+    this.loading.classList.remove("disable-loading");
   }
 
   static setStatusMsg(msg) {
-    setTimeout(() => {
-      console.log(msg);
-      this.progress.innerHTML = msg;
-    }, 0);
+    this.progress.innerHTML = msg;
   }
 }
