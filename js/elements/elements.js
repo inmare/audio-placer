@@ -6,6 +6,7 @@ import PlayButton from "./playButton";
 import MoveButton from "./moveButton";
 import RangeSlider from "./rangeSlider";
 import ExportAudio from "./exportAudio";
+import BatchUpload from "./batchUpload";
 
 export default function initElement() {
   Loading.addListener();
@@ -16,4 +17,5 @@ export default function initElement() {
   MoveButton.addListener();
   RangeSlider.addListener();
   ExportAudio.addListener();
+  BatchUpload.addListener();
 }

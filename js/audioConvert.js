@@ -12,7 +12,7 @@ export default class AudioConvert {
 
   constructor() {}
 
-  static createFullAudioBuffer(audioOrder) {
+  static async createFullAudioBuffer(audioOrder) {
     const crunker = new Crunker();
     const bufferList = [];
 
@@ -20,7 +20,7 @@ export default class AudioConvert {
       Loading.setStatusMsg(`${i + 1}번째 노래를 변환중 입니다...`);
       const audioIdx = audioOrder[i];
       const info = Project.info[audioIdx];
-      const adujstedBuffer = createBuffer(i, info);
+      const adujstedBuffer = await createBuffer(i, info);
       bufferList.push(adujstedBuffer);
     }
 
@@ -28,24 +28,32 @@ export default class AudioConvert {
 
     return fullAudioBuffer;
 
-    function createBuffer(idx, info) {
-      const buffer = info.audioData;
-      const startTime = info.audioStart;
-      const endTime = info.audioEnd;
-      const duration = buffer.duration;
-      const slicedBuffer = crunker.sliceAudio(
-        buffer,
-        startTime,
-        duration - endTime
-      );
-      const gain = AudioPlayer.calculateGain(slicedBuffer);
-      const gainAdujustedBuffer = AudioConvert.changeAudioGain(
-        slicedBuffer,
-        gain
-      );
+    async function createBuffer(idx, info) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const buffer = info.audioData;
+          const startTime = info.audioStart;
+          const endTime = info.audioEnd;
+          const duration = buffer.duration;
+          const slicedBuffer = crunker.sliceAudio(
+            buffer,
+            startTime,
+            duration - endTime
+          );
+          const gain = AudioPlayer.calculateGain(slicedBuffer);
+          const gainAdujustedBuffer = AudioConvert.changeAudioGain(
+            slicedBuffer,
+            gain
+          );
 
-      if (idx !== 0) return crunker.padAudio(gainAdujustedBuffer, 0, 1);
-      else return buffer;
+          let finalBuffer;
+          if (idx !== 0)
+            finalBuffer = crunker.padAudio(gainAdujustedBuffer, 0, 1);
+          else finalBuffer = buffer;
+
+          resolve(finalBuffer);
+        }, 100);
+      });
     }
   }
 
@@ -60,7 +68,7 @@ export default class AudioConvert {
     return audioBuffer;
   }
 
-  static createMP3BlobURL(fullAudioBuffer) {
+  static async createMP3BlobURL(fullAudioBuffer) {
     const mp3encoder = new Mp3Encoder(
       this.channelNum,
       this.sampleRate,
@@ -74,16 +82,16 @@ export default class AudioConvert {
     const blockSize = this.sampleBlockSize;
 
     for (let i = 0; i < fullAudioBuffer.length; i += blockSize) {
+      if (i % 1000 === 0)
+        Loading.setStatusMsg(
+          `데이터를 mp3파일로 변환 중입니다...<br>(${i}/${fullAudioBuffer.length})`
+        );
       const leftChunk = samplesLeft.subarray(i, i + blockSize);
       const rightChunk = samplesRight.subarray(i, i + blockSize);
-      const mp3buf = createMP3Buffer(leftChunk, rightChunk, blockSize);
+      const mp3buf = await createMP3Buffer(leftChunk, rightChunk, blockSize);
       if (mp3buf.length > 0) {
         mp3Data.push(mp3buf);
       }
-
-      Loading.setStatusMsg(
-        `데이터를 mp3파일로 변환 중입니다...<br>(${i}/${fullAudioBuffer.length})`
-      );
     }
 
     // mp3 파일 작성 마무리
@@ -97,22 +105,26 @@ export default class AudioConvert {
 
     return url;
 
-    function createMP3Buffer(leftChunk, rightChunk, blockSize) {
-      const mp3encoder = new Mp3Encoder(
-        AudioConvert.channelNum,
-        AudioConvert.sampleRate,
-        AudioConvert.kbps
-      );
-      // Float32Array를 Int16Array로 변환
-      const leftPCM = new Int16Array(blockSize);
-      const rightPCM = new Int16Array(blockSize);
-      for (let i = 0; i < blockSize; i++) {
-        leftPCM[i] = leftChunk[i] * 32767;
-        rightPCM[i] = rightChunk[i] * 32767;
-      }
+    async function createMP3Buffer(leftChunk, rightChunk, blockSize) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const mp3encoder = new Mp3Encoder(
+            AudioConvert.channelNum,
+            AudioConvert.sampleRate,
+            AudioConvert.kbps
+          );
+          // Float32Array를 Int16Array로 변환
+          const leftPCM = new Int16Array(blockSize);
+          const rightPCM = new Int16Array(blockSize);
+          for (let i = 0; i < blockSize; i++) {
+            leftPCM[i] = leftChunk[i] * 32767;
+            rightPCM[i] = rightChunk[i] * 32767;
+          }
 
-      const mp3buf = mp3encoder.encodeBuffer(leftPCM, rightPCM);
-      return mp3buf;
+          const mp3buf = mp3encoder.encodeBuffer(leftPCM, rightPCM);
+          resolve(mp3buf);
+        }, 0);
+      });
     }
   }
 }
