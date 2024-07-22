@@ -4,6 +4,7 @@ import CanvasDraw from "../canvasDraw";
 import RangeSlider from "./rangeSlider";
 import AudioCanvas from "./audioCanvas";
 import PlayButton from "./playButton";
+import Loading from "./loading";
 import { MOVE_TYPE, RANGE_TYPE } from "../config";
 
 /**
@@ -158,7 +159,7 @@ function moveItem(event, moveType) {
   if (moveType == MOVE_TYPE.up) {
     beforeElem = items[targetIdx - 1];
   } else if (moveType == MOVE_TYPE.down) {
-    beforeElem = items[targetIdx + 1];
+    beforeElem = items[targetIdx + 2];
   }
 
   target.parentNode.insertBefore(target, beforeElem);
@@ -188,6 +189,8 @@ function getOverElement(event) {
  * @param {Event} event 이벤트 객체
  */
 function uploadMusicFile(event) {
+  Loading.enable();
+  Loading.setStatusMsg("노래를 업로드 하는 중입니다...");
   const file = event.target.files[0];
   const target = event.target.closest(".playlist-item");
   const idx = parseInt(target.dataset.id);
@@ -202,6 +205,7 @@ function uploadMusicFile(event) {
     // 3. 만약 클릭이 되어있다면 2번 작업 이후 추가적인 업데이트 필요
     // 3-1. canvas와 range 값 업데이트하기
     if (Playlist.clicked === target) setPlayer(idx, Project.info[idx]);
+    Loading.disable();
   };
   reader.readAsArrayBuffer(file);
 
