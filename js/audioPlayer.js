@@ -1,7 +1,7 @@
-import { AUDIO_STATUS, DEFAULT_AUDIO_INFO } from "./config";
-import Playlist from "./playlist";
+import Project from "./project";
 import CanvasDraw from "./canvasDraw";
-import Elements from "./elements";
+import PlayButton from "./elements/playButton";
+import { AUDIO_STATUS } from "./config";
 
 export default class AudioPlayer {
   static current = {
@@ -17,7 +17,7 @@ export default class AudioPlayer {
 
   static async setSource(idx, audioBuffer) {
     if (this.current.source) this.stop();
-    const info = Playlist.list[idx].info;
+    const info = Project.info[idx];
     const audioData = await this.getAudioData(audioBuffer);
     const initGain = this.calculateGain(audioData);
 
@@ -25,8 +25,8 @@ export default class AudioPlayer {
     info.audioData = audioData;
     info.audioInitGain = initGain;
     info.audioGain = initGain;
-    info.audioStart = DEFAULT_AUDIO_INFO.audioStart;
-    info.audioEnd = DEFAULT_AUDIO_INFO.audioEnd;
+    info.audioStart = 0;
+    info.audioEnd = 0;
   }
 
   static play(offset) {
@@ -35,7 +35,7 @@ export default class AudioPlayer {
     if (idx === null) return;
 
     const audioCtx = this.current.context;
-    const info = Playlist.list[idx].info;
+    const info = Project.info[idx];
     if (this.current.source) {
       this.current.source.stop();
       this.current.source = null;
@@ -68,7 +68,7 @@ export default class AudioPlayer {
   static seek(offset) {
     this.stop();
     this.current.offset = offset;
-    const status = Elements.audio.playBtn.dataset.status;
+    const status = PlayButton.btn.dataset.status;
     if (status === AUDIO_STATUS.play) {
       this.play(offset);
     } else if (status === AUDIO_STATUS.pause) {
@@ -138,7 +138,7 @@ export default class AudioPlayer {
     const offset = this.current.offset + currentTime - prevTime;
     this.current.offset = offset;
 
-    const info = Playlist.list[this.current.idx].info;
+    const info = Project.info[this.current.idx];
     const duration = info.audioData.duration;
     const endTime = info.audioEnd;
     // 만약 audioEnd를 넘어가면 멈춤
@@ -161,10 +161,10 @@ export default class AudioPlayer {
   }
 
   static stopOffset() {
-    const startTime = Playlist.list[this.current.idx].info.audioStart;
+    const startTime = Project.info[this.current.idx].audioStart;
     this.current.offset = startTime;
     this.cancelOffset();
     CanvasDraw.drawStatus(startTime, null, null);
-    Elements.audio.playBtn.click();
+    PlayButton.btn.click();
   }
 }
