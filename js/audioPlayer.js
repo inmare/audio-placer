@@ -19,12 +19,11 @@ export default class AudioPlayer {
     if (this.current.source) this.stop();
     const info = Project.info[idx];
     const audioData = await this.getAudioData(audioBuffer);
-    const initGain = this.calculateGain(audioData);
+    const gain = this.calculateGain(audioData);
 
     // audioData와 gain값 초기화
     info.audioData = audioData;
-    info.audioInitGain = initGain;
-    info.audioGain = initGain;
+    info.audioGain = gain;
     info.audioStart = 0;
     info.audioEnd = 0;
   }
@@ -45,7 +44,7 @@ export default class AudioPlayer {
 
     const gainNode = audioCtx.createGain();
     // 실제보다 살짝 작은 볼륨으로 재생
-    gainNode.gain.value = info.audioInitGain / 3;
+    gainNode.gain.value = info.audioGain / 3;
 
     this.current.source.connect(gainNode);
     gainNode.connect(audioCtx.destination);
@@ -90,11 +89,11 @@ export default class AudioPlayer {
   static getMonoChannelData(audioData) {
     let channelData;
     if (audioData.numberOfChannels === 2) {
-      const ch0 = audioData.getChannelData(0);
-      const ch1 = audioData.getChannelData(1);
-      let newData = new Float32Array(ch0.length);
-      for (let i = 0; i < ch0.length; i++) {
-        newData[i] = (ch0[i] + ch1[i]) / 2;
+      const leftAudio = audioData.getChannelData(0);
+      const rightAudio = audioData.getChannelData(1);
+      let newData = new Float32Array(leftAudio.length);
+      for (let i = 0; i < leftAudio.length; i++) {
+        newData[i] = (leftAudio[i] + rightAudio[i]) / 2;
       }
       channelData = newData;
     } else if (audioData.numberOfChannels === 1) {

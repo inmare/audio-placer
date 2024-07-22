@@ -21,7 +21,7 @@ export default class CanvasDraw {
   static drawSpectrum(idx) {
     const info = Project.info[idx];
     const audioData = info.audioData;
-    const audioInitGain = info.audioInitGain;
+    const audioGain = info.audioGain;
     const channelData = AudioPlayer.getMonoChannelData(audioData);
 
     const chunk = CANVAS_AUDIO_CHUNK;
@@ -45,7 +45,7 @@ export default class CanvasDraw {
         dataIdx++;
       }
       const avg = sum / chunk;
-      const factor = audioInitGain * 2;
+      const factor = audioGain * 2;
 
       // 특정 이하의 값으로 dB가 내려가면 높이를 선으로 표시
       const h = avg < 0.005 ? 1 : avg * canvas.height * factor;

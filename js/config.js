@@ -24,7 +24,6 @@ export const CANVAS_AUDIO_CHUNK = 10000 / 4;
 
 export const DEFAULT_AUDIO_INFO = {
   audioData: null,
-  audioInitGain: 0,
   audioGain: 0,
   audioStart: 0,
   audioEnd: 0,
