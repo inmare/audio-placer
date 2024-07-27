@@ -102,7 +102,7 @@ export default class AudioPlayer {
     return channelData;
   }
 
-  static calculateGain(audioData, start = null, end = null) {
+  static calculateRMSDecibel(audioData, start = null, end = null) {
     const channelData = this.getMonoChannelData(audioData);
     const sampleRate = audioData.sampleRate;
 
@@ -116,10 +116,15 @@ export default class AudioPlayer {
     }
 
     const referenceValue = 1;
-    const mean = square / channelData.length;
+    const mean = square / (endIdx - startIdx);
     const rms = Math.sqrt(mean);
     const rmsDecibel = 20 * Math.log10(rms / referenceValue);
 
+    return rmsDecibel;
+  }
+
+  static calculateGain(audioData, start = null, end = null) {
+    const rmsDecibel = this.calculateRMSDecibel(audioData, start, end);
     const targetDecibel = -9;
     const gainDecibel = targetDecibel - rmsDecibel;
     const audioGain = Math.pow(10, gainDecibel / 20);
