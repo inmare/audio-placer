@@ -71,10 +71,11 @@ export default class ExportFile {
 
   static cleanInfo(audioOrder) {
     const audioRelatedKeys = Array.from(Object.keys(DEFAULT_AUDIO_INFO));
+    // 순서에 맞게 info 정리 및 mp3를 만드는 과정에서 추가된 정보 제거
     const cleanedInfo = audioOrder.map((idx) => {
       const projectInfo = Project.info[idx];
       const info = {};
-      for (let key in Object.keys(projectInfo)) {
+      for (let key of Object.keys(projectInfo)) {
         if (!audioRelatedKeys.includes(key)) {
           info[key] = projectInfo[key];
         }
