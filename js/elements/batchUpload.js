@@ -1,7 +1,7 @@
 import Project from "../project";
 import Loading from "./loading";
 import AudioPlayer from "../audioPlayer";
-import ExportAudio from "./exportAudio";
+import ExportFile from "./exportFile";
 
 export default class BatchUpload {
   static btn = document.querySelector("#batch-upload");
@@ -18,11 +18,11 @@ export default class BatchUpload {
   }
 
   static async upload(event) {
-    if (this.isUploading || ExportAudio.isExporting) return;
+    if (this.isUploading || ExportFile.isExporting) return;
 
     Loading.enable();
     this.disableUploadBtn();
-    ExportAudio.disableExportBtn();
+    ExportFile.disableExportBtn();
     const files = event.target.files;
     const fileNames = Project.info.map((info) => info.fileName);
     for (let file of files) {
@@ -38,7 +38,7 @@ export default class BatchUpload {
     }
     Loading.disable();
     this.enableUploadBtn();
-    ExportAudio.enableExportBtn();
+    ExportFile.enableExportBtn();
 
     async function readAudioData(file) {
       return new Promise((resolve, reject) => {
