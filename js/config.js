@@ -33,3 +33,11 @@ export const IMG_PATH = {
   play: "img/play-solid.svg",
   pause: "img/pause-solid.svg",
 };
+
+export const MP3_CONFIG = {
+  sampleRate: 48000,
+  kbps: 192,
+  channels: 2,
+  sampleBlockSize: 576 * 3000,
+  padSecond: 1.5,
+};

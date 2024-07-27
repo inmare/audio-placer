@@ -1,20 +1,16 @@
-import Crunker from "crunker";
+import utils from "audio-buffer-utils";
 import { Mp3Encoder } from "@breezystack/lamejs";
 import Project from "./project";
-import AudioPlayer from "./audioPlayer";
 import Loading from "./elements/loading";
+import { MP3_CONFIG } from "./config";
 
 export default class AudioConvert {
-  static sampleRate = 48000;
-  static channelNum = 2;
-  static kbps = 128;
-  static sampleBlockSize = 1152;
-
   constructor() {}
 
   static async createFullAudioBuffer(audioOrder) {
-    const crunker = new Crunker();
     const bufferList = [];
+
+    let accmulatedDuration = 0;
 
     for (let i = 0; i < audioOrder.length; i++) {
       Loading.setStatusMsg(`${i + 1}번째 노래를 변환중 입니다...`);
@@ -22,11 +18,13 @@ export default class AudioConvert {
       const info = Project.info[audioIdx];
       const adujstedBuffer = await createBuffer(i, info);
       bufferList.push(adujstedBuffer);
+      Project.info[audioIdx].startSecond = accmulatedDuration;
+      Project.info[audioIdx].endSecond =
+        accmulatedDuration + info.adujstedBuffer.duration;
+      accmulatedDuration += info.adujstedBuffer.duration;
     }
 
-    const fullAudioBuffer = crunker.concatAudio(bufferList);
-
-    return fullAudioBuffer;
+    return utils.concat(bufferList);
 
     async function createBuffer(idx, info) {
       return new Promise((resolve, reject) => {
@@ -35,57 +33,52 @@ export default class AudioConvert {
           const startTime = info.audioStart;
           const endTime = info.audioEnd;
           const duration = buffer.duration;
-          const slicedBuffer = crunker.sliceAudio(
+
+          const sliced = utils.slice(
             buffer,
-            startTime,
-            duration - endTime
+            Math.round(startTime * MP3_CONFIG.sampleRate),
+            Math.round((duration - endTime) * MP3_CONFIG.sampleRate)
           );
-          const gain = AudioPlayer.calculateGain(slicedBuffer);
-          const gainAdujustedBuffer = AudioConvert.changeAudioGain(
-            slicedBuffer,
-            gain
-          );
+          const normalized = utils.normalize(sliced);
 
-          let finalBuffer;
-          if (idx !== 0)
-            finalBuffer = crunker.padAudio(gainAdujustedBuffer, 0, 1);
-          else finalBuffer = buffer;
-
-          resolve(finalBuffer);
-        }, 100);
+          if (idx !== 0) {
+            // pad가 작동을 안해서 빈 buffer를 만들어서 concat함
+            const empty = utils.create(
+              Math.round(MP3_CONFIG.padSecond * MP3_CONFIG.sampleRate),
+              MP3_CONFIG.channels,
+              MP3_CONFIG.sampleRate
+            );
+            utils.fill(empty, 0);
+            const padded = utils.concat([empty, normalized]);
+            resolve(padded);
+          } else {
+            resolve(normalized);
+          }
+        }, 0);
       });
     }
   }
 
-  static changeAudioGain(audioBuffer, gain) {
-    const channelNum = audioBuffer.numberOfChannels;
-    for (let channel = 0; channel < channelNum; channel++) {
-      const channelData = audioBuffer.getChannelData(channel);
-      for (let i = 0; i < channelData.length; i++) {
-        channelData[i] *= gain;
-      }
-    }
-    return audioBuffer;
-  }
-
   static async createMP3BlobURL(fullAudioBuffer) {
     const mp3encoder = new Mp3Encoder(
-      this.channelNum,
-      this.sampleRate,
-      this.kbps
+      MP3_CONFIG.channels,
+      MP3_CONFIG.sampleRate,
+      MP3_CONFIG.kbps
     );
 
     const samplesLeft = fullAudioBuffer.getChannelData(0);
     const samplesRight = fullAudioBuffer.getChannelData(1);
 
     const mp3Data = [];
-    const blockSize = this.sampleBlockSize;
+    const blockSize = MP3_CONFIG.sampleBlockSize;
 
     for (let i = 0; i < fullAudioBuffer.length; i += blockSize) {
-      if (i % 1000 === 0)
+      if (i % 1000 === 0) {
+        const percent = Math.round((i / fullAudioBuffer.length) * 100);
         Loading.setStatusMsg(
-          `데이터를 mp3파일로 변환 중입니다...<br>(${i}/${fullAudioBuffer.length})`
+          `데이터를 mp3파일로 변환 중입니다.<br>이 페이지를 계속 열어두세요.<br>${percent}% 진행 중...`
         );
+      }
       const leftChunk = samplesLeft.subarray(i, i + blockSize);
       const rightChunk = samplesRight.subarray(i, i + blockSize);
       const mp3buf = await createMP3Buffer(leftChunk, rightChunk, blockSize);
@@ -103,6 +96,8 @@ export default class AudioConvert {
     const blob = new Blob(mp3Data, { type: "audio/mp3" });
     const url = window.URL.createObjectURL(blob);
 
+    Loading.setStatusMsg("변환이 완료되었습니다...");
+
     return url;
 
     async function createMP3Buffer(leftChunk, rightChunk, blockSize) {
@@ -117,8 +112,8 @@ export default class AudioConvert {
           const leftPCM = new Int16Array(blockSize);
           const rightPCM = new Int16Array(blockSize);
           for (let i = 0; i < blockSize; i++) {
-            leftPCM[i] = leftChunk[i] * 32767;
-            rightPCM[i] = rightChunk[i] * 32767;
+            leftPCM[i] = leftChunk[i] * (Math.pow(2, 15) - 1);
+            rightPCM[i] = rightChunk[i] * (Math.pow(2, 15) - 1);
           }
 
           const mp3buf = mp3encoder.encodeBuffer(leftPCM, rightPCM);
