@@ -1,11 +1,10 @@
-import Project from "../project";
 import Loading from "./loading";
 import Playlist from "./playlist";
 import AudioCanvas from "./audioCanvas";
 import PlayButton from "./playButton";
 import MoveButton from "./moveButton";
 import RangeSlider from "./rangeSlider";
-import ExportAudio from "./exportAudio";
+import ExportFile from "./exportFile";
 import BatchUpload from "./batchUpload";
 
 export default function initElement() {
@@ -16,6 +15,6 @@ export default function initElement() {
   PlayButton.addListener();
   MoveButton.addListener();
   RangeSlider.addListener();
-  ExportAudio.addListener();
+  ExportFile.addListener();
   BatchUpload.addListener();
 }

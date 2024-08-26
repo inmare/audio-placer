@@ -1,3 +1,10 @@
+import {
+  BlobReader,
+  BlobWriter,
+  TextReader,
+  TextWriter,
+  ZipWriter,
+} from "@zip.js/zip.js";
 import Loading from "./loading";
 import Project from "../project";
 import AudioConvert from "../audioConvert";
@@ -29,19 +36,22 @@ export default class ExportFile {
     const fullAudioBuffer = await AudioConvert.createFullAudioBuffer(
       audioOrder
     );
-    const mp3BlobURL = await AudioConvert.createMP3BlobURL(fullAudioBuffer);
+    const mp3Blob = await AudioConvert.createMP3Blob(fullAudioBuffer);
     Loading.disable();
     this.enableExportBtn();
     BatchUpload.enableUploadBtn();
 
-    let link = document.createElement("a");
-    link.href = mp3BlobURL;
-    link.download = `${Loading.jsonFileName.replace(".json", "")}.mp3`;
-    link.click();
-    URL.revokeObjectURL(mp3BlobURL);
-    Loading.setStatusMsg("노래 변환이 완료되었습니다!");
-
     const cleanedInfo = this.cleanInfo(audioOrder);
+
+    Loading.setStatusMsg("파일을 압축하는 중입니다...");
+    const zipFile = await this.createZipFile(mp3Blob, cleanedInfo);
+    const zipFileName = Loading.jsonFileName.replace(".json", ".zip");
+    const zipUrl = URL.createObjectURL(zipFile);
+    const a = document.createElement("a");
+    a.href = zipUrl;
+    a.download = zipFileName;
+    a.click();
+    URL.revokeObjectURL(zipUrl);
   }
 
   static checkAudioDataExist() {
@@ -84,5 +94,25 @@ export default class ExportFile {
     });
 
     return cleanedInfo;
+  }
+
+  static async createZipFile(mp3Blob, cleanedInfo) {
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        const filePrefix = Loading.jsonFileName.replace(".json", "");
+
+        const zipFileWriter = new BlobWriter();
+        const jsonReader = new TextReader(JSON.stringify(cleanedInfo));
+        const mp3Reader = new BlobReader(mp3Blob);
+
+        const zipWriter = new ZipWriter(zipFileWriter);
+        await zipWriter.add(`${filePrefix}.json`, jsonReader);
+        await zipWriter.add(`${filePrefix}.mp3`, mp3Reader);
+        await zipWriter.close();
+
+        const zipBlob = await zipFileWriter.getData();
+        resolve(zipBlob);
+      }, 0);
+    });
   }
 }
