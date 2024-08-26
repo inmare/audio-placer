@@ -10,7 +10,7 @@ export default class AudioConvert {
   static async createFullAudioBuffer(audioOrder) {
     const bufferList = [];
 
-    let accmulatedDuration = 0;
+    let totalDuration = 0;
 
     for (let i = 0; i < audioOrder.length; i++) {
       Loading.setStatusMsg(`${i + 1}번째 노래를 변환중 입니다...`);
@@ -18,10 +18,25 @@ export default class AudioConvert {
       const info = Project.info[audioIdx];
       const adujstedBuffer = await createBuffer(i, info);
       bufferList.push(adujstedBuffer);
-      Project.info[audioIdx].startSecond = accmulatedDuration;
-      Project.info[audioIdx].endSecond =
-        accmulatedDuration + info.adujstedBuffer.duration;
-      accmulatedDuration += info.adujstedBuffer.duration;
+      // pad되는 second와 audio의 index를 고려해서 시작지점, 끝지점 설정
+      let startSecond, endSecond;
+      if (i === 0) {
+        startSecond = 0;
+        endSecond = adujstedBuffer.duration + MP3_CONFIG.padSecond / 2;
+      } else if (i !== 0) {
+        startSecond = totalDuration + MP3_CONFIG.padSecond / 2;
+        endSecond =
+          totalDuration + adujstedBuffer.duration + MP3_CONFIG.padSecond / 2;
+      } else if (i === audioOrder.length - 1) {
+        startSecond = totalDuration + MP3_CONFIG.padSecond / 2;
+        endSecond = totalDuration + adujstedBuffer.duration;
+      }
+      // 소수점 1자리까지 반올림
+      startSecond = Math.round(startSecond * 10) / 10;
+      endSecond = Math.round(endSecond * 10) / 10;
+      Project.info[audioIdx].startSecond = startSecond;
+      Project.info[audioIdx].endSecond = endSecond;
+      totalDuration += adujstedBuffer.duration;
     }
 
     return utils.concat(bufferList);
@@ -59,7 +74,7 @@ export default class AudioConvert {
     }
   }
 
-  static async createMP3BlobURL(fullAudioBuffer) {
+  static async createMP3Blob(fullAudioBuffer) {
     const mp3encoder = new Mp3Encoder(
       MP3_CONFIG.channels,
       MP3_CONFIG.sampleRate,
@@ -81,7 +96,12 @@ export default class AudioConvert {
       }
       const leftChunk = samplesLeft.subarray(i, i + blockSize);
       const rightChunk = samplesRight.subarray(i, i + blockSize);
-      const mp3buf = await createMP3Buffer(leftChunk, rightChunk, blockSize);
+      const mp3buf = await createMP3Buffer(
+        mp3encoder,
+        leftChunk,
+        rightChunk,
+        blockSize
+      );
       if (mp3buf.length > 0) {
         mp3Data.push(mp3buf);
       }
@@ -94,20 +114,18 @@ export default class AudioConvert {
     }
 
     const blob = new Blob(mp3Data, { type: "audio/mp3" });
-    const url = window.URL.createObjectURL(blob);
-
     Loading.setStatusMsg("변환이 완료되었습니다...");
 
-    return url;
+    return blob;
 
-    async function createMP3Buffer(leftChunk, rightChunk, blockSize) {
+    async function createMP3Buffer(
+      mp3encoder,
+      leftChunk,
+      rightChunk,
+      blockSize
+    ) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          const mp3encoder = new Mp3Encoder(
-            AudioConvert.channelNum,
-            AudioConvert.sampleRate,
-            AudioConvert.kbps
-          );
           // Float32Array를 Int16Array로 변환
           const leftPCM = new Int16Array(blockSize);
           const rightPCM = new Int16Array(blockSize);
