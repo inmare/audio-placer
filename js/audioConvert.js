@@ -3,6 +3,7 @@ import { Mp3Encoder } from "@breezystack/lamejs";
 import Project from "./project";
 import Loading from "./elements/loading";
 import { MP3_CONFIG } from "./config";
+import AudioPlayer from "./audioPlayer";
 
 export default class AudioConvert {
   constructor() {}
@@ -54,7 +55,30 @@ export default class AudioConvert {
             Math.round(startTime * MP3_CONFIG.sampleRate),
             Math.round((duration - endTime) * MP3_CONFIG.sampleRate)
           );
-          const normalized = utils.normalize(sliced);
+
+          const gain = AudioPlayer.calculateGain(sliced);
+          const bufferSource = new AudioContext().createBufferSource();
+          bufferSource.buffer = sliced;
+
+          const numberOfChannels = sliced.numberOfChannels;
+          const length = sliced.length;
+          const maxVolume = 1.0;
+          const minVolume = 0.0;
+
+          for (let i = 0; i < numberOfChannels; i++) {
+            const channelData = sliced.getChannelData(i);
+            for (let j = 0; j < length; j++) {
+              let value = channelData[j];
+              let adjustedValue = Math.abs(value) * gain;
+              adjustedValue = Math.min(maxVolume, adjustedValue);
+              adjustedValue = Math.max(minVolume, adjustedValue);
+              adjustedValue = value < 0 ? -adjustedValue : adjustedValue;
+
+              channelData[j] = adjustedValue;
+            }
+          }
+
+          const normalized = bufferSource.buffer;
 
           if (idx !== 0) {
             // pad가 작동을 안해서 빈 buffer를 만들어서 concat함
