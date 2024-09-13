@@ -56,6 +56,10 @@
   transition-duration: 0.25s;
 }
 
+#batch-file-input {
+  display: none;
+}
+
 /* playlist item 버튼 스타일 */
 .playlist-item:first-child .move-up,
 .playlist-item:last-child .move-down {
