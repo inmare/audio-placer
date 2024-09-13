@@ -132,6 +132,7 @@ export default class AudioConvert {
     }
 
     // mp3 파일 작성 마무리
+    // 이때 한번 더 데이터를 push하는 과정을 거치면서 노래의 끝 부분에 작은 공백이 추가 될 수 있음
     const mp3buf = mp3encoder.flush();
     if (mp3buf.length > 0) {
       mp3Data.push(mp3buf);
