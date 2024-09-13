@@ -7,8 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --base=./",
     "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
     "push": "push-dir --dir=dist --branch=gh-pages --cleanup"
   },
   "keywords": [],
