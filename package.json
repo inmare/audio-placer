@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "gh-pages": "^6.1.1",
+    "push-dir": "^0.4.1",
     "vite": "^5.4.4"
   },
   "homepage": "https://inmare.github.io/audio-placer/"
