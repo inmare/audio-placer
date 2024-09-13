@@ -38,6 +38,6 @@ export const MP3_CONFIG = {
   sampleRate: 48000,
   kbps: 192,
   channels: 2,
-  sampleBlockSize: 576 * 3000,
+  sampleBlockSize: 576 * 2,
   padSecond: 1.5,
 };
