@@ -14,7 +14,11 @@
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",
     "@zip.js/zip.js": "^2.7.47",
-    "audio-buffer-utils": "^5.1.2",
-    "vite": "^5.3.3"
+    "audio-buffer-utils": "^5.1.2"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1",
+    "push-dir": "^0.4.1",
+    "vite": "^5.4.4"
   }
 }
