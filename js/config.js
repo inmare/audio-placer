@@ -1,6 +1,3 @@
-import playImgPath from "../img/play-solid.svg";
-import pauseImgPath from "../img/pause-solid.svg";
-
 export const AUDIO_STATUS = {
   play: "play",
   pause: "pause",
@@ -33,8 +30,8 @@ export const DEFAULT_AUDIO_INFO = {
 };
 
 export const IMG_PATH = {
-  play: playImgPath,
-  pause: pauseImgPath,
+  play: "img/play-solid.svg",
+  pause: "img/pause-solid.svg",
 };
 
 export const MP3_CONFIG = {
