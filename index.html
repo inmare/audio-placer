@@ -1,131 +1,13 @@
-<!DOCTYPE html>
-<html lang="ko">
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="css/style.css" />
-    <title>MP3 생성기</title>
+    <title>audio-placer</title>
   </head>
   <body>
-    <div id="app">
-      <div id="header-wrapper">
-        <div id="header-desc-wrapper">
-          <p id="header-title">플레이 리스트 연결하기</p>
-          <p>
-            플레이 리스트의 노래를 연결해주는 사이트입니다.<br />우측의 ?
-            아이콘을 클릭해서 자세한 사용법을 볼 수 있습니다.
-          </p>
-        </div>
-        <div id="header-btn-wrapper">
-          <div id="batch-upload" class="btn">
-            <img src="img/upload-solid.svg" alt="" />
-            <input
-              type="file"
-              id="batch-file-input"
-              multiple="multiple"
-              accept=".mp3"
-            />
-          </div>
-          <div id="export-mp3" class="btn">
-            <img src="img/download-solid.svg" alt="" />
-          </div>
-          <div class="btn">
-            <a
-              href="https://github.com/inmare/audio-placer/wiki/%EC%82%AC%EC%9A%A9%EB%B2%95"
-              target="_blank"
-              ><img src="img/question-solid.svg" alt=""
-            /></a>
-          </div>
-          <div class="btn">
-            <a href="https://github.com/inmare/audio-placer" target="_blank"
-              ><img src="img/github.svg" alt=""
-            /></a>
-          </div>
-        </div>
-      </div>
-      <div id="main-wrapper">
-        <div id="loading">
-          <div id="json-file-wrapper">
-            <p>플레이리스트 정보가 담긴 파일을 업로드 해주세요.</p>
-            <button id="upload-json-file">파일 업로드</button>
-            <input type="file" id="json-file-input" accept=".json" />
-          </div>
-          <p id="loading-progress"></p>
-        </div>
-        <div id="playlist-wrapper"></div>
-        <div id="audio-wrapper">
-          <div id="audio-btn-wrapper">
-            <div id="btn-wrapper">
-              <div id="audio-play" class="btn" data-status="pause">
-                <img src="img/play-solid.svg" alt="재생" />
-              </div>
-              <div id="move-forward" class="btn">
-                <img src="img/backward-solid.svg" alt="제일 앞으로 이동" />
-              </div>
-              <div id="move-backward" class="btn">
-                <img src="img/forward-solid.svg" alt="제일 뒤로 이동" />
-              </div>
-            </div>
-            <div id="range-wrapper">
-              <div class="range">
-                <label for="">시작 지점</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  value="0"
-                  name="start-range"
-                  id="start-range"
-                />
-              </div>
-              <div class="range">
-                <label for="">끝 지점</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  value="0"
-                  name="end-range"
-                  id="end-range"
-                />
-              </div>
-            </div>
-          </div>
-          <div id="canvas-wrapper">
-            <canvas id="audio-status"></canvas>
-            <canvas id="audio-canvas"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-    <template id="playlist-item-template">
-      <div>
-        <div class="music-info-wrapper">
-          <p>
-            <span class="music-order"></span>
-            <span class="music-title"></span>
-          </p>
-          <div class="music-upload-wrapper">
-            <span class="music-file-name">파일을 업로드 해주세요</span>
-          </div>
-        </div>
-        <div class="item-btn-wrapper">
-          <div class="music-upload-btn btn">
-            <img src="img/file-audio-solid.svg" alt="" />
-            <input class="upload-music" type="file" accept=".mp3" />
-          </div>
-          <div class="move-up btn">
-            <img src="img/arrow-up-solid.svg" alt="" />
-          </div>
-          <div class="move-down btn">
-            <img src="img/arrow-down-solid.svg" alt="" />
-          </div>
-        </div>
-      </div>
-    </template>
-    <script type="module" src="js/script.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
